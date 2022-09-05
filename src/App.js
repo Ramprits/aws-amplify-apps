@@ -1,28 +1,43 @@
 import React from 'react';
-import {
-  BrowserRouter,
-  Routes,
-  Route
-} from 'react-router-dom';
+import { Refine } from "@pankod/refine-core";
+import routerProvider, {
+  HashRouterComponent,
+} from "@pankod/refine-react-router-v6";
+import dataProvider from "@pankod/refine-simple-rest";
 
 import IndexPage from './pages/Index.js';
 import LoginPage from './pages/Login.js';
 import RegisterPage from './pages/Register.js';
 import ContactPage from './pages/Contact.js';
-import Login from './pages/Login.js';
-import Register from './pages/Register.js';
+
+import { axiosInstance } from './utils/index.js';
+import { authProvider } from './utils/authProvider.js';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route exact path="/" element={<IndexPage />} />
-        <Route exact path="/login" element={<LoginPage />} />
-        <Route exact path="/register" element={<RegisterPage />} />
-        <Route exact path="/contact" element={<ContactPage />} />
-        <Route exact path="/login" element={<Login />} />
-        <Route exact path="/register" element={<Register />} />
-      </Routes>
-    </BrowserRouter>
+    <Refine
+      routerProvider={{
+        ...routerProvider, routes: [
+          {
+            element: <LoginPage />,
+            path: "/login"
+          },
+          {
+            element: <RegisterPage />,
+            path: "/register"
+          },
+          {
+            element: <ContactPage />,
+            path: "/contact",
+          }
+        ],
+        RouterComponent: HashRouterComponent,
+      }}
+      authProvider={authProvider}
+      dataProvider={dataProvider(axiosInstance)}
+      resources={[{ name: "home", list: IndexPage }]}
+      ReadyPage={IndexPage}
+      options={{ disableTelemetry: true }}
+    />
   );
 }
